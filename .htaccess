@@ -1,0 +1,13 @@
+<Files ~ ".*\.php$">
+    Order deny,allow
+    Deny from all
+</Files>
+<Files "index.php">
+    Order deny,allow
+    Allow from all
+</Files>
+RewriteEngine On
+RewriteRule "(^|/)\." - [F]
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f 
+RewriteRule ^.*$ ./index.php
