@@ -1,12 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 3.5.8.1deb1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generato il: Ago 07, 2013 alle 23:44
--- Versione del server: 5.5.32-0ubuntu0.13.04.1
--- Versione PHP: 5.4.9-4ubuntu2.2
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -17,7 +8,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `FrescoCMS_a`
+-- Database: `FrescoCMS`
 --
 
 -- --------------------------------------------------------
@@ -103,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `utenti` (
   `password` varchar(64) NOT NULL,
   `nome` varchar(60) NOT NULL,
   `cognome` varchar(60) NOT NULL,
+  `numero` tinyint(3) unsigned DEFAULT NULL,
   `descrizione` text,
   `immagine` varchar(200) DEFAULT NULL,
   `mostra_email` tinyint(1) NOT NULL,
@@ -115,10 +107,10 @@ CREATE TABLE IF NOT EXISTS `utenti` (
 -- Dump dei dati per la tabella `utenti`
 --
 
-INSERT INTO `utenti` (`id`, `email`, `password`, `nome`, `cognome`, `descrizione`, `immagine`, `mostra_email`, `strumenti`, `permessi`) VALUES
-(1, 'lu30ca@gmail.com', 'asd?', 'Luca', 'Rinelli', 'Asd? LoL!', NULL, 1, NULL, 0),
-(2, 'non@la.ricordo', 'asd?', 'Giuseppe', 'Rinelli', 'Questa dovrebbe essere una piccola descrizione dell''utente.', NULL, 1, NULL, 0),
-(3, 'asd@lol.troll', 'asd?', 'Luca', 'Rinelli', NULL, NULL, 0, NULL, 0);
+INSERT INTO `utenti` (`id`, `email`, `password`, `nome`, `cognome`, `numero`, `descrizione`, `immagine`, `mostra_email`, `strumenti`, `permessi`) VALUES
+(1, 'lu30ca@gmail.com', 'asd?', 'Luca', 'Rinelli', NULL, 'Asd? LoL!', NULL, 1, NULL, 0),
+(2, 'non@la.ricordo', 'asd?', 'Giuseppe', 'Rinelli', NULL, 'Questa dovrebbe essere una piccola descrizione dell''utente.', NULL, 1, NULL, 0),
+(3, 'asd@lol.troll', 'asd?', 'Luca', 'Rinelli', 2, NULL, NULL, 0, NULL, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

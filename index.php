@@ -24,5 +24,14 @@ if(MANUTENZIONE||file_exists("manutenzione.html")){
     else echo "<h1>Sito in manutenzione</h1><p>Ripassa tra un po'...<p>";
     exit();
 }
+/*
+ * Se il sito si trova in una sottocartella del dominio SITE_DIRECTORY assumera
+ * come valore il nome della cartella preceduto e seguito da "/", se non si
+ * trova in una sottocartella assumerà come valore "/".
+ */
+if(!defined('SITE_DIRECTORY'))define('SITE_DIRECTORY',str_replace($_SERVER['DOCUMENT_ROOT'],'',str_replace('index.php','',$_SERVER['PHP_SELF'])));
+/*
+ * Carica la classe principale ed esegue la sua funzione __construct.
+ */
 require_once "includes/main.php";
 $fresco=new Fresco();

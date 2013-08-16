@@ -9,6 +9,8 @@ class Fresco{
     private $req_id;
     //Array contenente il contenuto
     private $content;
+    //Array contente l'elenco di pagine del menù
+    private $menu;
     /***
      * Metodo eseguito in automatico una volta istanziata la classe,
      * avvia la connessione al database e il dispatcher.
@@ -60,7 +62,7 @@ class Fresco{
             $result=$this->db
                     ->where('nome', $nameSurnameN[0])
                     ->where('cognome',$nameSurnameN[1])
-                    ->get('utenti','id, password');
+                    ->get('utenti','id');
             if($nameSurnameN[2]==null)$n=0;
             else $n=$nameSurnameN[2]-1;
             return $result[$n][id]?$result[$n][id]:0;
@@ -198,16 +200,20 @@ class Fresco{
     public function printComment($type,$id){
         
     }
-    public function getMenuItems(){//Fare in modo che sia inclusa in automatico l'home-page e la pagina eventi.
-            $res=$this->db
-                    ->where('layout_pagina','1')
-                    ->get('contenuti','titolo');
-            return $res;        
-    }
-    public function printMenuItem($res,$num){
-        print $res[$num][titolo];
-    }
-    public function printMenuItemLink($res,$num){
-        
+    public function printUrl($num=0,$type){
+        switch($type){
+            case 'autore':
+                $res=$this->db
+                    ->where('id',$this->content[$num][autore])
+                    ->get('utenti','nome, cognome, numero');
+                $url='&'.$res[0][nome].$res[0][cognome].$res[0][numero];
+                break;
+            case 'evento':
+                $url='eventi/'.str_replace(' ','-',$this->content[$num][titolo]);
+                break;
+            default:
+                $url=str_replace(' ','-',$this->content[$num][titolo]);
+        }
+        print 'http://'.$_SERVER['SERVER_NAME'].SITE_DIRECTORY.$url;
     }
 }
