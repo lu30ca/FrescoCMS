@@ -1,5 +1,7 @@
 <?php
+//Include il file contenente la classe per la gestione del database.
 require_once 'includes/db.php';
+//Classe principale del cms.
 class Fresco{
     //Contenitore classe Db
     private $db;
@@ -13,13 +15,15 @@ class Fresco{
     private $menu;
     /***
      * Metodo eseguito in automatico una volta istanziata la classe,
-     * avvia la connessione al database e il dispatcher.
+     * avvia la connessione al database e il dispatcher, successivamente memorizza
+     * le voci di menu nella variabile menu e i contenuti nella variabile content..
      */
     public function __construct(){
         $this->db=new MysqliDb();
         $this->dispatch($this->getRequest());
+        $this->menu=$this->getMenuItems();
         $this->content=$this->getContent($this->req_type,$this->req_id);
-        require_once 'themes/'.TEMA.'/'.$this->req_type.'.php';
+        return require_once 'themes/'.TEMA.'/'.$this->req_type.'.php';
     }
     /***
      * Restituisce l'id e il tipo di pagina per le funzioni di rendering, importa
@@ -27,7 +31,7 @@ class Fresco{
      */
     private function dispatch($req){
         $req=$this->db->escape($req);
-        if($req==null||$req=='index.php'){//Restituisce l'home page, ATTENZIONE: Aggiungere altre pagine home per i vecchi articoli. Oppure risolvere il problema con ajax e javascript facendoli aggiungere sulla stessa pagina (più elegante).
+        if($req==null||$req=='index.php'){//Restituisce l'home page.
             $this->req_type='home';
         }
         elseif(substr($req,0,1)=="&"){
@@ -40,7 +44,9 @@ class Fresco{
                 if($this->req_id=$this->isEvent(substr($req,7)))$this->req_type='evento';
                 else $req=404;
             }
-        }elseif($this->req_id=$this->isArticle($req))$this->req_type='articolo';
+        }elseif($req=="stats"||$req=="stats/")$this->req_type='stats';
+        elseif($req=="login"||$req=="login/")$this->req_type='login';
+        elseif($this->req_id=$this->isArticle($req))$this->req_type='articolo';
         elseif($this->req_id=$this->isPage($req))$this->req_type='pagina';
         else $req=404;
         if($req==404)$this->req_type='404';
@@ -146,8 +152,6 @@ class Fresco{
                     ->where('id',$id)
                     ->get('contenuti','titolo, contenuto, commenti, numero_commenti, immagine');
                 break;
-            case "404":
-                break;
         }
         return $this->content=$result;
     }
@@ -168,6 +172,12 @@ class Fresco{
             case "articolo":
             case "pagina":
                 $title=$this->content[0][titolo];
+                break;
+            case "login":
+                $title='Login';
+                break;
+            case "stats":
+                $title='Statistiche';
                 break;
             case "404":
                 $title='Pagina non trovata';
@@ -200,7 +210,7 @@ class Fresco{
     public function printComment($type,$id){
         
     }
-    public function printUrl($num=0,$type){
+    public function printUrl($num=0,$type='',$a=null){
         switch($type){
             case 'autore':
                 $res=$this->db
@@ -211,9 +221,33 @@ class Fresco{
             case 'evento':
                 $url='eventi/'.str_replace(' ','-',$this->content[$num][titolo]);
                 break;
+            case 'menu':
+                $item=$this->menu[$num];
+                if($item=='Home')$url='';
+                elseif($item=='Eventi')$url='eventi';
+                else $url=str_replace(' ','-',$this->menu[$num]);
+                break;
             default:
-                $url=str_replace(' ','-',$this->content[$num][titolo]);
+                if($a)$url=$a;
+                else $url=str_replace(' ','-',$this->content[$num][titolo]);
         }
         print 'http://'.$_SERVER['SERVER_NAME'].SITE_DIRECTORY.$url;
+    }
+    private function getMenuItems(){
+            $res=$this->db
+                    ->where('layout_pagina','1')
+                    ->get('contenuti','titolo');
+            $items[0]='Home';
+            for($i=0;$res[$i][titolo];$i++){
+                $items[$i+1]=$res[$i][titolo];
+            }
+            $items[]='Eventi';
+            return $items;        
+    }
+    public function printMenuItem($num){
+        print $this->menu[$num];
+    }
+    public function getLoginForm(){
+        require_once 'themes/'.TEMA.'/login-form.php';;
     }
 }
